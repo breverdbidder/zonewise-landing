@@ -1,61 +1,52 @@
 # CLAUDE.md — ZoneWise.AI Landing Page
 
-## Project
-ZoneWise.AI marketing landing page with 3D scroll animations, Three.js globe, and zoning map visualizations.
+## IDENTITY
+You are the AI Engineer for the ZoneWise.AI landing page. Single-file static site with 3D animations deployed to GitHub Pages → future Cloudflare Pages at zonewise.ai.
 
-## Brand (MANDATORY)
-- Primary: Navy `#1E3A5F`
-- Accent/CTA: Orange `#F59E0B`
-- Font: Space Grotesk (display) + JetBrains Mono (code/data)
-- Background: `#020617` (slate-950)
-- Text: `#E2E8F0` (slate-200)
-- Muted: `#94A3B8`
-- Reference: BRAND_COLORS.md in zonewise-web repo
+## REPO
+- GitHub: breverdbidder/zonewise-landing
+- Live Preview: https://breverdbidder.github.io/zonewise-landing/
+- Production (future): https://zonewise.ai
 
-## Architecture
-- Single `index.html` file (self-contained HTML/CSS/JS)
-- Three.js r128 for 3D globe (CDN loaded)
-- Canvas-based zoning map animation (no external deps)
-- CSS scroll-driven reveals + IntersectionObserver
-- Zero build step — static file deployment
+## BRAND (MANDATORY)
+- Primary: Navy #1E3A5F
+- Accent/CTA: Orange #F59E0B
+- Font: Space Grotesk (display) + JetBrains Mono (code)
+- Background: #020617 (slate-950)
+- Text: #E2E8F0 | Muted: #94A3B8
+- NEVER deviate from these colors
 
-## Key Sections
-1. **Hero**: Three.js rotating wireframe globe with orange/blue particles, radial gradient overlay
-2. **Stats Bar**: Animated counters (78K+ parcels, 8 municipalities, 100% match, 250K+ zones)
-3. **Zoning Map Canvas**: Grid-based parcel fill animation triggered on scroll intersection
-4. **Municipal Coverage**: 8 municipality cards with progress bars (Palm Bay, Melbourne, etc.)
-5. **Features**: 3-column grid (Spatial Join, GIS Integration, AI Classification)
-6. **Search Demo**: Animated typewriter search bar with fake autocomplete dropdown
-7. **How It Works**: 3-step flow (Enter Address → AI Classifies → Get Zoning)
-8. **CTA**: Email capture with frosted glass card
-9. **Footer**: ZoneWise.AI branding + Everest Capital USA
+## ARCHITECTURE
+Single `index.html` — embedded CSS, Three.js r128 CDN for 3D globe, vanilla JS for scroll animations, particle BG, counters, search demo. Zero build step.
 
-## Enhancement Priorities (for Claude Code sessions)
-1. **Kling 3.0 Video Integration**: When MP4 assets arrive, replace Three.js globe with hero video background + gradient mask. Extract scroll animation video to JPEG frames.
-2. **Mapbox Preview**: Add live Mapbox GL JS embed (token: `pk.eyJ1IjoiZXZlcmVzdDE4...`) centered on Brevard County (28.3, -80.7, zoom 10) with dark style + frosted overlay.
-3. **Performance**: Compress all assets, lazy-load below-fold, target Lighthouse 90+.
-4. **Mobile**: Full responsive optimization — stack grids, resize globe canvas, touch-friendly CTA.
-5. **Scroll Animations**: Add GSAP or Locomotive Scroll for smoother frame-by-frame video scrubbing if Kling assets are integrated.
+## 3D ASSET INTEGRATION (when Kling 3.0 videos arrive)
 
-## Deployment
-- **Preview**: GitHub Pages — `breverdbidder.github.io/zonewise-landing/`
-- **Production**: Cloudflare Pages — `zonewise.ai` (DNS already on Cloudflare)
-- **CI**: Push to `main` auto-deploys to GitHub Pages. CF Pages connects to same repo.
+### Hero Video Replace Globe
+1. Compress: `ffmpeg -i hero.mp4 -vcodec libx264 -crf 28 -preset slow -vf scale=1920:-2 -an hero_compressed.mp4` (target <500KB)
+2. Replace Three.js canvas with `<video autoplay muted loop playsinline>`
+3. Keep `.hero-overlay` radial gradient mask
 
-## Session Hygiene
-- MANDATORY plugins: Context7 + CC Status Line
-- Kill session at 50% context. NEVER /compact.
-- Cost discipline: $10/session MAX. ONE attempt per approach.
+### Scroll-Driven Frame Animation
+1. Extract: `ffmpeg -i scroll.mp4 -vf fps=24 -q:v 2 frames/frame_%04d.jpg`
+2. Optimize: `mogrify -quality 75 -resize 1920x1080 frames/*.jpg`
+3. Map scroll position → frame index, preload first 10 frames
+4. Insert between Municipal Coverage and Features sections
 
-## Testing
-- Open in browser, verify globe renders, scroll animations trigger, counters animate
-- Check mobile viewport (375px width)
-- Verify no console errors
-- Lighthouse audit: Performance ≥ 90, Accessibility ≥ 90
+### Mapbox Integration
+Token: USE_MAPBOX_TOKEN_FROM_ENV
+Center: [28.3, -80.7] zoom 10, dark-v11 style, frosted glass overlay
 
-## DO NOT
-- Change brand colors without explicit approval
-- Add npm/build dependencies — keep it a single static HTML file
-- Use Inter, Roboto, or Arial fonts
-- Break the Three.js globe or canvas animations
-- Remove any municipality data
+## SESSION RULES
+- MANDATORY: Context7 + CC Status Line plugins
+- 50% context → kill session, never /compact
+- Commit+push after every change (Pages auto-deploys)
+- $10/session MAX
+
+## PRIORITY QUEUE
+1. [ ] Integrate Kling 3.0 hero video
+2. [ ] Add scroll-driven frame animation
+3. [ ] Add Mapbox GL JS preview
+4. [ ] Connect email CTA to Supabase waitlist
+5. [ ] OG image + Twitter cards
+6. [ ] Lighthouse 95+
+7. [ ] Deploy to Cloudflare Pages (production)
